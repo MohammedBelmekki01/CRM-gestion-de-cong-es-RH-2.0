@@ -6,14 +6,14 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
 model Department {
   id          Int        @id @default(autoincrement())
-  name        String     @unique @db.VarChar(100)
-  description String?    @db.Text
+  name        String     @unique
+  description String?
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
   
@@ -26,11 +26,11 @@ model Department {
 
 model Position {
   id           Int         @id @default(autoincrement())
-  name         String      @db.VarChar(100)
+  name         String
   departmentId Int         @map("department_id")
-  description  String?     @db.Text
-  salaryMin    Decimal?    @map("salary_min") @db.Decimal(10, 2)
-  salaryMax    Decimal?    @map("salary_max") @db.Decimal(10, 2)
+  description  String?
+  salaryMin    Float?      @map("salary_min")
+  salaryMax    Float?      @map("salary_max")
   createdAt    DateTime    @default(now()) @map("created_at")
   updatedAt    DateTime    @updatedAt @map("updated_at")
   
@@ -43,9 +43,9 @@ model Position {
 
 model Role {
   id          Int        @id @default(autoincrement())
-  name        String     @unique @db.VarChar(50)
-  description String?    @db.Text
-  permissions Json?
+  name        String     @unique
+  description String?
+  permissions String?
   createdAt   DateTime   @default(now()) @map("created_at")
   updatedAt   DateTime   @updatedAt @map("updated_at")
   
@@ -55,52 +55,27 @@ model Role {
   @@map("roles")
 }
 
-enum Gender {
-  male
-  female
-}
-
-enum GenderRestriction {
-  male
-  female
-  all
-}
-
-enum LeaveStatus {
-  pending
-  approved
-  rejected
-  cancelled
-}
-
-enum NotificationType {
-  info
-  success
-  warning
-  error
-}
-
 model Employee {
   id                     Int       @id @default(autoincrement())
-  employeeNumber         String    @unique @map("employee_number") @db.VarChar(20)
-  firstName              String    @map("first_name") @db.VarChar(100)
-  lastName               String    @map("last_name") @db.VarChar(100)
-  email                  String    @unique @db.VarChar(100)
-  password               String    @db.VarChar(255)
-  phone                  String?   @db.VarChar(20)
-  gender                 Gender
-  dateOfBirth            DateTime? @map("date_of_birth") @db.Date
-  hireDate               DateTime  @map("hire_date") @db.Date
+  employeeNumber         String    @unique @map("employee_number")
+  firstName              String    @map("first_name")
+  lastName               String    @map("last_name")
+  email                  String    @unique
+  password               String
+  phone                  String?
+  gender                 String
+  dateOfBirth            DateTime? @map("date_of_birth")
+  hireDate               DateTime  @map("hire_date")
   departmentId           Int       @map("department_id")
   positionId             Int       @map("position_id")
   roleId                 Int       @map("role_id")
   managerId              Int?      @map("manager_id")
-  salary                 Decimal?  @db.Decimal(10, 2)
-  address                String?   @db.Text
-  emergencyContactName   String?   @map("emergency_contact_name") @db.VarChar(100)
-  emergencyContactPhone  String?   @map("emergency_contact_phone") @db.VarChar(20)
+  salary                 Float?
+  address                String?
+  emergencyContactName   String?   @map("emergency_contact_name")
+  emergencyContactPhone  String?   @map("emergency_contact_phone")
   isActive               Boolean   @default(true) @map("is_active")
-  profilePicture         String?   @map("profile_picture") @db.VarChar(255)
+  profilePicture         String?   @map("profile_picture")
   createdAt              DateTime  @default(now()) @map("created_at")
   updatedAt              DateTime  @updatedAt @map("updated_at")
   
@@ -124,96 +99,98 @@ model Employee {
 }
 
 model LeaveType {
-  id                        Int                 @id @default(autoincrement())
-  name                      String              @unique @db.VarChar(100)
-  description               String?             @db.Text
-  maxDaysPerYear            Int?                @map("max_days_per_year")
-  maxDaysPerMonth           Int?                @map("max_days_per_month")
-  maxTimesPerMonth          Int?                @map("max_times_per_month")
-  genderRestriction         GenderRestriction   @default(all) @map("gender_restriction")
-  requiresMedicalCertificate Boolean            @default(false) @map("requires_medical_certificate")
-  color                     String              @default("#3B82F6") @db.VarChar(7)
-  isActive                  Boolean             @default(true) @map("is_active")
-  createdAt                 DateTime            @default(now()) @map("created_at")
-  updatedAt                 DateTime            @updatedAt @map("updated_at")
+  id                         Int            @id @default(autoincrement())
+  name                       String         @unique
+  description                String?
+  maxDaysPerYear             Int?           @map("max_days_per_year")
+  maxDaysPerMonth            Int?           @map("max_days_per_month")
+  maxTimesPerMonth           Int?           @map("max_times_per_month")
+  genderRestriction          String         @default("all") @map("gender_restriction")
+  requiresMedicalCertificate Boolean        @default(false) @map("requires_medical_certificate")
+  color                      String         @default("#3B82F6")
+  isActive                   Boolean        @default(true) @map("is_active")
+  createdAt                  DateTime       @default(now()) @map("created_at")
+  updatedAt                  DateTime       @updatedAt @map("updated_at")
   
   // Relations
-  leaveRequests             LeaveRequest[]
-  leaveBalances             LeaveBalance[]
+  leaveRequests              LeaveRequest[]
+  leaveBalances              LeaveBalance[]
   
   @@map("leave_types")
 }
 
 model LeaveRequest {
-  id                    Int         @id @default(autoincrement())
-  employeeId            Int         @map("employee_id")
-  leaveTypeId           Int         @map("leave_type_id")
-  startDate             DateTime    @map("start_date") @db.Date
-  endDate               DateTime    @map("end_date") @db.Date
-  daysRequested         Int         @map("days_requested")
-  reason                String?     @db.Text
-  status                LeaveStatus @default(pending)
-  approvedBy            Int?        @map("approved_by")
-  approvedAt            DateTime?   @map("approved_at")
-  rejectionReason       String?     @map("rejection_reason") @db.Text
-  medicalCertificate    String?     @map("medical_certificate") @db.VarChar(255)
-  createdAt             DateTime    @default(now()) @map("created_at")
-  updatedAt             DateTime    @updatedAt @map("updated_at")
+  id                 Int         @id @default(autoincrement())
+  employeeId         Int         @map("employee_id")
+  leaveTypeId        Int         @map("leave_type_id")
+  startDate          DateTime    @map("start_date")
+  endDate            DateTime    @map("end_date")
+  daysRequested      Float       @map("days_requested")
+  isHalfDay          Boolean     @default(false) @map("is_half_day")
+  halfDayPeriod      String?     @map("half_day_period") // "morning" or "afternoon"
+  reason             String?
+  status             String      @default("pending")
+  approvedBy         Int?        @map("approved_by")
+  approvedAt         DateTime?   @map("approved_at")
+  rejectionReason    String?     @map("rejection_reason")
+  medicalCertificate String?     @map("medical_certificate")
+  createdAt          DateTime    @default(now()) @map("created_at")
+  updatedAt          DateTime    @updatedAt @map("updated_at")
   
   // Relations
-  employee              Employee    @relation(fields: [employeeId], references: [id])
-  leaveType             LeaveType   @relation(fields: [leaveTypeId], references: [id])
-  approver              Employee?   @relation("ApprovedBy", fields: [approvedBy], references: [id])
-  leaveFiles            LeaveFile[]
+  employee           Employee    @relation(fields: [employeeId], references: [id])
+  leaveType          LeaveType   @relation(fields: [leaveTypeId], references: [id])
+  approver           Employee?   @relation("ApprovedBy", fields: [approvedBy], references: [id])
+  files              LeaveFile[]
   
   @@map("leave_requests")
 }
 
 model LeaveBalance {
-  id             Int       @id @default(autoincrement())
-  employeeId     Int       @map("employee_id")
-  leaveTypeId    Int       @map("leave_type_id")
-  year           Int
-  allocatedDays  Int       @map("allocated_days")
-  usedDays       Int       @default(0) @map("used_days")
-  remainingDays  Int       @map("remaining_days")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
+  id            Int       @id @default(autoincrement())
+  employeeId    Int       @map("employee_id")
+  leaveTypeId   Int       @map("leave_type_id")
+  year          Int
+  allocatedDays Int       @map("allocated_days")
+  usedDays      Int       @default(0) @map("used_days")
+  remainingDays Int       @map("remaining_days")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
   
   // Relations
-  employee       Employee  @relation(fields: [employeeId], references: [id])
-  leaveType      LeaveType @relation(fields: [leaveTypeId], references: [id])
+  employee      Employee  @relation(fields: [employeeId], references: [id])
+  leaveType     LeaveType @relation(fields: [leaveTypeId], references: [id])
   
   @@unique([employeeId, leaveTypeId, year], name: "unique_employee_leave_year")
   @@map("leave_balances")
 }
 
 model LeaveFile {
-  id              Int          @id @default(autoincrement())
-  leaveRequestId  Int          @map("leave_request_id")
-  fileName        String       @map("file_name") @db.VarChar(255)
-  filePath        String       @map("file_path") @db.VarChar(500)
-  fileType        String       @map("file_type") @db.VarChar(50)
-  fileSize        Int          @map("file_size")
-  uploadedAt      DateTime     @default(now()) @map("uploaded_at")
+  id             Int          @id @default(autoincrement())
+  leaveRequestId Int          @map("leave_request_id")
+  fileName       String       @map("file_name")
+  filePath       String       @map("file_path")
+  fileType       String       @map("file_type")
+  fileSize       Int          @map("file_size")
+  uploadedAt     DateTime     @default(now()) @map("uploaded_at")
   
   // Relations
-  leaveRequest    LeaveRequest @relation(fields: [leaveRequestId], references: [id], onDelete: Cascade)
+  leaveRequest   LeaveRequest @relation(fields: [leaveRequestId], references: [id], onDelete: Cascade)
   
   @@map("leave_files")
 }
 
 model Notification {
-  id         Int              @id @default(autoincrement())
-  employeeId Int              @map("employee_id")
-  title      String           @db.VarChar(255)
-  message    String           @db.Text
-  type       NotificationType @default(info)
-  isRead     Boolean          @default(false) @map("is_read")
-  createdAt  DateTime         @default(now()) @map("created_at")
+  id         Int      @id @default(autoincrement())
+  employeeId Int      @map("employee_id")
+  title      String
+  message    String
+  type       String   @default("info")
+  isRead     Boolean  @default(false) @map("is_read")
+  createdAt  DateTime @default(now()) @map("created_at")
   
   // Relations
-  employee   Employee         @relation(fields: [employeeId], references: [id])
+  employee   Employee @relation(fields: [employeeId], references: [id])
   
   @@map("notifications")
 }
@@ -221,7 +198,7 @@ model Notification {
 model UserSession {
   id         Int      @id @default(autoincrement())
   employeeId Int      @map("employee_id")
-  token      String   @unique @db.VarChar(255)
+  token      String   @unique
   expiresAt  DateTime @map("expires_at")
   createdAt  DateTime @default(now()) @map("created_at")
   
@@ -229,4 +206,31 @@ model UserSession {
   employee   Employee @relation(fields: [employeeId], references: [id])
   
   @@map("user_sessions")
+}
+
+model PublicHoliday {
+  id          Int      @id @default(autoincrement())
+  name        String
+  date        DateTime
+  description String?
+  isRecurring Boolean  @default(false) @map("is_recurring")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  
+  @@map("public_holidays")
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  employeeId  Int?     @map("employee_id")
+  action      String
+  entity      String
+  entityId    Int?     @map("entity_id")
+  oldValues   String?  @map("old_values")
+  newValues   String?  @map("new_values")
+  ipAddress   String?  @map("ip_address")
+  userAgent   String?  @map("user_agent")
+  createdAt   DateTime @default(now()) @map("created_at")
+  
+  @@map("audit_logs")
 }
