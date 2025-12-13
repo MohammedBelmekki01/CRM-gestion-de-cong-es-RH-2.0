@@ -47,7 +47,7 @@ export async function GET(
       );
 
     const userRole =
-      typeof user.role === "string" ? user.role : user.role?.name;
+      typeof user.role === "string" ? user.role : (user.role as any)?.name;
     const isHR = userRole === "RH" || userRole === "Admin";
 
     // Permissions - employees can only see their own requests
@@ -90,7 +90,7 @@ export async function PUT(
       );
 
     const userRole =
-      typeof user.role === "string" ? user.role : user.role?.name;
+      typeof user.role === "string" ? user.role : (user.role as any)?.name;
     const isHR = userRole === "RH" || userRole === "Admin";
     const { status, rejectionReason, reason } = body;
 
@@ -217,7 +217,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
     const userRole =
-      typeof user.role === "string" ? user.role : user.role?.name;
+      typeof user.role === "string" ? user.role : (user.role as any)?.name;
     const isHR = userRole === "RH" || userRole === "Admin";
     const { id } = await params;
     const requestId = Number(id);

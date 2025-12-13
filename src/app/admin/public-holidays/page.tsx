@@ -61,7 +61,7 @@ const holidaySchema = z.object({
   name: z.string().min(1, "Le nom est requis"),
   date: z.string().min(1, "La date est requise"),
   description: z.string().optional(),
-  isRecurring: z.boolean().default(false),
+  isRecurring: z.boolean(),
 });
 
 type HolidayFormValues = z.infer<typeof holidaySchema>;

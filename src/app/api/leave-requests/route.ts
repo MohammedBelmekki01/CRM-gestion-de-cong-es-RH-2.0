@@ -59,7 +59,7 @@ export async function GET(req: NextRequest) {
 
     // user.role is the role name string from JWT
     const userRole =
-      typeof user.role === "string" ? user.role : user.role?.name;
+      typeof user.role === "string" ? user.role : (user.role as any)?.name;
     const isHR = userRole === "RH" || userRole === "Admin";
 
     const where: Record<string, unknown> = {};

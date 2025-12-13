@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
             },
           },
           leaveType: { select: { name: true } },
-          approvedBy: {
+          approver: {
             select: { firstName: true, lastName: true },
           },
         },
