@@ -58,8 +58,7 @@ export async function GET(req: NextRequest) {
     const endDate = searchParams.get("endDate");
 
     // user.role is the role name string from JWT
-    const userRole =
-      typeof user.role === "string" ? user.role : (user.role as any)?.name;
+    const userRole = user.role;
     const isHR = userRole === "RH" || userRole === "Admin";
 
     const where: Record<string, unknown> = {};
