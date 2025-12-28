@@ -1,4 +1,4 @@
-# 🏢 CRM Projet RH - Version 2.0
+#  CRM Projet RH - Version 2.0
 
 <div align="center">
 
@@ -18,62 +18,62 @@
 
 ---
 
-## 📋 Description
+##  Description
 
 CRM Projet RH est une application web moderne de gestion des ressources humaines, spécialisée dans la gestion des congés et absences. Développée avec les dernières technologies (Next.js 15, React 19, Prisma), elle offre une interface intuitive et responsive pour les employés et les équipes RH.
 
 ---
 
-## ✨ Fonctionnalités
+##  Fonctionnalités
 
-### 🔐 Authentification & Sécurité
-- ✅ Authentification JWT sécurisée
-- ✅ Gestion des rôles (Admin, RH, Manager, Employé)
-- ✅ Récupération de mot de passe
-- ✅ Sessions sécurisées
+###  Authentification & Sécurité
+-  Authentification JWT sécurisée
+-  Gestion des rôles (Admin, RH, Manager, Employé)
+-  Récupération de mot de passe
+-  Sessions sécurisées
 
-### 👥 Gestion des Employés
-- ✅ CRUD complet des employés
-- ✅ Profils détaillés avec photo
-- ✅ Historique des congés
-- ✅ Attribution des départements et postes
+###  Gestion des Employés
+-  CRUD complet des employés
+-  Profils détaillés avec photo
+-  Historique des congés
+-  Attribution des départements et postes
 
-### 📅 Gestion des Congés
-- ✅ Demandes de congés en ligne
-- ✅ Support des **demi-journées** (matin/après-midi)
-- ✅ Workflow d'approbation multi-niveaux
-- ✅ Types de congés configurables :
-  - 🏖️ Congés annuels (18 jours)
-  - 🏥 Congés maladie (certificat médical requis)
-  - 👶 Congé maternité (120 jours)
-  - 👨‍👧 Congé paternité (3 jours)
-  - 🎉 Événements familiaux
-  - ⏰ Récupération
+###  Gestion des Congés
+-  Demandes de congés en ligne
+-  Support des **demi-journées** (matin/après-midi)
+-  Workflow d'approbation multi-niveaux
+-  Types de congés configurables :
+  -  Congés annuels (18 jours)
+  -  Congés maladie (certificat médical requis)
+  -  Congé maternité (120 jours)
+  -  Congé paternité (3 jours)
+  -  Événements familiaux
+  -  Récupération
 
-### 📊 Tableaux de Bord
-- ✅ **Dashboard RH** : Vue d'ensemble des demandes, statistiques
-- ✅ **Dashboard Employé** : Soldes, historique personnel
-- ✅ **Calendrier interactif** : Visualisation des absences
-- ✅ **Graphiques** : Statistiques et tendances (Recharts)
+###  Tableaux de Bord
+-  **Dashboard RH** : Vue d'ensemble des demandes, statistiques
+-  **Dashboard Employé** : Soldes, historique personnel
+-  **Calendrier interactif** : Visualisation des absences
+-  **Graphiques** : Statistiques et tendances (Recharts)
 
-### 🛠️ Administration
-- ✅ Gestion des départements
-- ✅ Gestion des postes
-- ✅ Configuration des types de congés
-- ✅ Gestion des jours fériés
-- ✅ Journal d'audit complet
-- ✅ Rapports et exports (Excel, PDF)
+###  Administration
+-  Gestion des départements
+-  Gestion des postes
+-  Configuration des types de congés
+-  Gestion des jours fériés
+-  Journal d'audit complet
+-  Rapports et exports (Excel, PDF)
 
-### 🎨 Interface Utilisateur
-- ✅ **Mode sombre/clair** avec persistance
-- ✅ Design moderne avec shadcn/ui
-- ✅ Interface 100% responsive
-- ✅ Notifications en temps réel
-- ✅ Animations fluides
+###  Interface Utilisateur
+-  **Mode sombre/clair** avec persistance
+-  Design moderne avec shadcn/ui
+-  Interface 100% responsive
+-  Notifications en temps réel
+-  Animations fluides
 
 ---
 
-## 🚀 Installation
+##  Installation
 
 ### Prérequis
 
@@ -108,30 +108,30 @@ L'application sera accessible sur **http://localhost:3000**
 
 ---
 
-## 🔑 Comptes de Démonstration
+##  Comptes de Démonstration
 
 | Rôle | Email | Mot de passe |
 |------|-------|--------------|
-| 👔 RH/Admin | `admin@entreprise.com` | `admin123` |
-| 👨‍💼 Employé | `jean.dupont@entreprise.com` | `admin123` |
-| 👩‍💼 Employée | `marie.martin@entreprise.com` | `admin123` |
+|  RH/Admin | `admin@entreprise.com` | `admin123` |
+|  Employé | `jean.dupont@entreprise.com` | `admin123` |
+|  Employée | `marie.martin@entreprise.com` | `admin123` |
 
-> ⚠️ **Note** : Ces credentials sont configurables via le fichier `.env`. Consultez `.env.example` pour plus de détails.
+>  **Note** : Ces credentials sont configurables via le fichier `.env`. Consultez `.env.example` pour plus de détails.
 
 ---
 
-## 📁 Structure du Projet
+##  Structure du Projet
 
 ```
 CRM-gestion-de-cong-es-RH/
-├── 📂 prisma/
+├──  prisma/
 │   ├── schema.prisma          # Schéma de base de données
 │   └── seed.ts                # Données initiales
-├── 📂 public/
+├──  public/
 │   └── uploads/               # Fichiers uploadés
-├── 📂 src/
-│   ├── 📂 app/
-│   │   ├── 📂 admin/          # Pages administration
+├──  src/
+│   ├──  app/
+│   │   ├──  admin/          # Pages administration
 │   │   │   ├── audit-logs/
 │   │   │   ├── departments/
 │   │   │   ├── employees/
@@ -141,29 +141,29 @@ CRM-gestion-de-cong-es-RH/
 │   │   │   ├── positions/
 │   │   │   ├── public-holidays/
 │   │   │   └── reports/
-│   │   ├── 📂 api/            # API Routes
+│   │   ├──  api/            # API Routes
 │   │   │   ├── auth/
 │   │   │   ├── departments/
 │   │   │   ├── employees/
 │   │   │   ├── leave-requests/
 │   │   │   └── ...
-│   │   ├── 📂 dashboard/      # Tableaux de bord
+│   │   ├──  dashboard/      # Tableaux de bord
 │   │   │   ├── calendar/
 │   │   │   ├── employee/
 │   │   │   ├── hr/
 │   │   │   ├── notifications/
 │   │   │   └── settings/
 │   │   └── forgot-password/
-│   ├── 📂 components/
+│   ├──  components/
 │   │   ├── auth/
 │   │   ├── forms/
 │   │   ├── layout/
 │   │   ├── providers/
 │   │   └── ui/                # Composants shadcn/ui
-│   ├── 📂 contexts/
+│   ├──  contexts/
 │   │   └── AuthContext.tsx
-│   ├── 📂 hooks/
-│   └── 📂 lib/
+│   ├──  hooks/
+│   └──  lib/
 │       ├── auth.ts
 │       ├── email.ts
 │       ├── prisma.ts
@@ -175,7 +175,7 @@ CRM-gestion-de-cong-es-RH/
 
 ---
 
-## 🛠️ Technologies
+##  Technologies
 
 ### Frontend
 | Technologie | Version | Description |
@@ -198,7 +198,7 @@ CRM-gestion-de-cong-es-RH/
 
 ---
 
-## 📊 Modèle de Données
+##  Modèle de Données
 
 ```
 ┌─────────────┐     ┌─────────────┐     ┌─────────────┐
@@ -223,18 +223,18 @@ CRM-gestion-de-cong-es-RH/
 
 ---
 
-## 🔒 Sécurité
+##  Sécurité
 
-- ✅ Mots de passe hashés avec bcrypt (10 rounds)
-- ✅ Tokens JWT avec expiration
-- ✅ Variables sensibles dans `.env` (non versionné)
-- ✅ Validation des entrées utilisateur
-- ✅ Protection CSRF
-- ✅ Middleware d'authentification
+- Mots de passe hashés avec bcrypt (10 rounds)
+-  Tokens JWT avec expiration
+-  Variables sensibles dans `.env` (non versionné)
+-  Validation des entrées utilisateur
+-  Protection CSRF
+-  Middleware d'authentification
 
 ---
 
-## 📝 Scripts Disponibles
+##  Scripts Disponibles
 
 ```bash
 # Développement
@@ -255,7 +255,7 @@ npm run lint         # Linter ESLint
 
 ---
 
-## 🤝 Contribution
+##  Contribution
 
 Les contributions sont les bienvenues ! 
 
@@ -267,13 +267,13 @@ Les contributions sont les bienvenues !
 
 ---
 
-## 📄 Licence
+##  Licence
 
 Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.
 
 ---
 
-## 👨‍💻 Auteur
+## Auteur
 
 **Mohammed Belmekki**
 
@@ -283,8 +283,6 @@ Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de 
 
 <div align="center">
 
-**⭐ Si ce projet vous a été utile, n'hésitez pas à lui donner une étoile !**
-
-Made with ❤️ using Next.js & TypeScript
+** Si ce projet vous a été utile, n'hésitez pas à lui donner une étoile !**
 
 </div>
