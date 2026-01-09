@@ -4,11 +4,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const department = await prisma.department.findUnique({
-      where: { id: Number(params.id) },
+      where: { id: Number(id) },
       include: {
         positions: true,
         employees: {
@@ -47,9 +48,10 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const { name, description } = await req.json();
 
     if (!name) {
@@ -57,7 +59,7 @@ export async function PUT(
     }
 
     const updated = await prisma.department.update({
-      where: { id: Number(params.id) },
+      where: { id: Number(id) },
       data: { name, description: description || null },
     });
 
@@ -73,12 +75,13 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check if department has employees
     const department = await prisma.department.findUnique({
-      where: { id: Number(params.id) },
+      where: { id: Number(id) },
       include: {
         _count: {
           select: { employees: true },
@@ -101,7 +104,7 @@ export async function DELETE(
     }
 
     await prisma.department.delete({
-      where: { id: Number(params.id) },
+      where: { id: Number(id) },
     });
 
     return NextResponse.json({ success: true });

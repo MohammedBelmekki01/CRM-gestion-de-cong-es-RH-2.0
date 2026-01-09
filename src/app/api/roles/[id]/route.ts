@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
 // Update a role
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const { name } = await req.json();
 
   if (!name) {
@@ -10,7 +11,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 
   const updated = await prisma.role.update({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
     data: { name },
   });
 
@@ -18,9 +19,10 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 // Delete a role
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+export async function DELETE(_: Request, { params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   await prisma.role.delete({
-    where: { id: Number(params.id) },
+    where: { id: Number(id) },
   });
 
   return NextResponse.json({ success: true });
