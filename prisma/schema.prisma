@@ -38,6 +38,7 @@ model Position {
   department   Department  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
   employees    Employee[]
   
+  @@index([departmentId])
   @@map("positions")
 }
 
@@ -120,6 +121,11 @@ model Employee {
   notifications          Notification[]
   userSessions           UserSession[]
   
+  @@index([departmentId])
+  @@index([positionId])
+  @@index([roleId])
+  @@index([managerId])
+  @@index([isActive])
   @@map("employees")
 }
 
@@ -166,6 +172,12 @@ model LeaveRequest {
   approver              Employee?   @relation("ApprovedBy", fields: [approvedBy], references: [id])
   leaveFiles            LeaveFile[]
   
+  @@index([employeeId])
+  @@index([leaveTypeId])
+  @@index([status])
+  @@index([approvedBy])
+  @@index([startDate, endDate])
+  @@index([employeeId, status])
   @@map("leave_requests")
 }
 
@@ -215,6 +227,8 @@ model Notification {
   // Relations
   employee   Employee         @relation(fields: [employeeId], references: [id])
   
+  @@index([employeeId])
+  @@index([employeeId, isRead])
   @@map("notifications")
 }
 
@@ -228,5 +242,7 @@ model UserSession {
   // Relations
   employee   Employee @relation(fields: [employeeId], references: [id])
   
+  @@index([employeeId])
+  @@index([expiresAt])
   @@map("user_sessions")
 }
