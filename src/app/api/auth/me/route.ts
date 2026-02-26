@@ -1,29 +1,31 @@
-// src/app/api/auth/me/route.ts
-export const runtime = "nodejs";
-import { getTokenFromCookie, verifyToken } from '@/lib/auth';
-import prisma from '@/lib/prisma';
-import { NextResponse } from 'next/server';
-
-
+import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { getUserFromRequest } from "@/lib/getUserFromRequest";
 
 export async function GET() {
-  const token = getTokenFromCookie();
-  if (!token) return NextResponse.json({ user: null });
+  const user = await getUserFromRequest();
+  if (!user) return NextResponse.json({ user: null }, { status: 401 });
 
   try {
-    interface DecodedToken {
-      id: number;
-      role: string;
-      iat?: number;
-      exp?: number;
-    }
-    const decoded = verifyToken(token) as DecodedToken;
-    const user = await prisma.employee.findUnique({
+    const decoded = user as { id: number; role: string };
+    const employee = await prisma.employee.findUnique({
       where: { id: decoded.id },
-      include: { role: true, department: true },
+      include: { role: true, department: true, position: true },
     });
 
-    return NextResponse.json({ user });
+    if (!employee) return NextResponse.json({ user: null }, { status: 404 });
+
+    return NextResponse.json({
+      user: {
+        id: employee.id,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        role: employee.role.name,
+        department: employee.department.name,
+        position: employee.position.name,
+      },
+    });
   } catch {
     return NextResponse.json({ user: null }, { status: 401 });
   }
