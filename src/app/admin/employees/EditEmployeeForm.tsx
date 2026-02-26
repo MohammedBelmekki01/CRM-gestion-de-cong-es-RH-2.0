@@ -1,62 +1,174 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/Input";
+import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
+import { Loader2 } from "lucide-react";
 
-export default function EditEmployeeForm({ employee, onUpdated }: { employee: any, onUpdated: () => void }) {
-  const [form, setForm] = useState(employee);
-  const [departments, setDepartments] = useState([]);
-  const [roles, setRoles] = useState([]);
+interface Department { id: number; name: string; }
+interface Role { id: number; name: string; }
+interface Position { id: number; name: string; departmentId: number; }
+
+interface EditEmployeeFormProps {
+  employee: Record<string, unknown>;
+  onUpdated: () => void;
+  onCancel?: () => void;
+}
+
+export default function EditEmployeeForm({ employee, onUpdated, onCancel }: EditEmployeeFormProps) {
+  const [form, setForm] = useState<Record<string, string>>({
+    firstName: String(employee.firstName || ""),
+    lastName: String(employee.lastName || ""),
+    email: String(employee.email || ""),
+    password: "",
+    phone: String(employee.phone || ""),
+    gender: String(employee.gender || "male"),
+    departmentId: String(employee.departmentId || ""),
+    positionId: String(employee.positionId || ""),
+    roleId: String(employee.roleId || ""),
+  });
+
+  const [departments, setDepartments] = useState<Department[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [positions, setPositions] = useState<Position[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
-      const deps = await fetch('/api/departments').then(res => res.json());
-      const rols = await fetch('/api/roles').then(res => res.json());
-      setDepartments(deps);
-      setRoles(rols);
+      const [depRes, rolRes, posRes] = await Promise.all([
+        fetch("/api/departments"),
+        fetch("/api/roles"),
+        fetch("/api/positions"),
+      ]);
+      setDepartments(await depRes.json());
+      setRoles(await rolRes.json());
+      setPositions(await posRes.json());
     };
     fetchData();
   }, []);
 
+  const filteredPositions = form.departmentId
+    ? positions.filter((p) => p.departmentId === parseInt(form.departmentId))
+    : positions;
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((prev) => {
+      const next = { ...prev, [name]: value };
+      if (name === "departmentId") next.positionId = "";
+      return next;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const res = await fetch(`/api/employees/${employee.id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        ...form,
-        departmentId: parseInt(form.departmentId),
-        roleId: parseInt(form.roleId),
-      }),
-      headers: { 'Content-Type': 'application/json' },
-    });
+    setLoading(true);
+    setError("");
 
-    if (res.ok) {
-      onUpdated();
-    } else {
-      console.error('Erreur lors de la mise à jour');
+    const payload: Record<string, unknown> = {
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+      phone: form.phone || null,
+      gender: form.gender,
+      departmentId: parseInt(form.departmentId),
+      positionId: parseInt(form.positionId),
+      roleId: parseInt(form.roleId),
+    };
+
+    if (form.password) payload.password = form.password;
+
+    try {
+      const res = await fetch(`/api/employees/${employee.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        onUpdated();
+      } else {
+        const json = await res.json();
+        setError(json.error || "Erreur lors de la mise à jour");
+      }
+    } catch {
+      setError("Erreur de connexion au serveur");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-2 border p-4 rounded shadow bg-white mt-4">
-      <h3 className="font-semibold">Modifier Employé : {employee.firstName}</h3>
-      <input name="firstName" value={form.firstName} onChange={handleChange} className="border p-2 w-full" />
-      <input name="lastName" value={form.lastName} onChange={handleChange} className="border p-2 w-full" />
-      <input name="email" value={form.email} onChange={handleChange} className="border p-2 w-full" />
-      <input name="password" value={form.password || ''} onChange={handleChange} className="border p-2 w-full" placeholder="Laisser vide pour ne pas changer" />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-4 py-3">
+          {error}
+        </div>
+      )}
 
-      <select name="departmentId" value={form.departmentId} onChange={handleChange} className="border p-2 w-full">
-        {departments.map((d: any) => <option key={d.id} value={d.id}>{d.name}</option>)}
-      </select>
+      <div className="grid grid-cols-2 gap-4">
+        <Input label="Prénom" name="firstName" value={form.firstName} onChange={handleChange} required />
+        <Input label="Nom" name="lastName" value={form.lastName} onChange={handleChange} required />
+      </div>
 
-      <select name="roleId" value={form.roleId} onChange={handleChange} className="border p-2 w-full">
-        {roles.map((r: any) => <option key={r.id} value={r.id}>{r.name}</option>)}
-      </select>
+      <Input label="E-mail" name="email" type="email" value={form.email} onChange={handleChange} required />
+      <Input label="Nouveau mot de passe" name="password" type="password" value={form.password} onChange={handleChange} placeholder="Laisser vide pour ne pas changer" />
 
-      <button type="submit" className="bg-green-600 text-white px-4 py-2 rounded">Enregistrer</button>
+      <div className="grid grid-cols-2 gap-4">
+        <Input label="Téléphone" name="phone" value={form.phone} onChange={handleChange} />
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Genre</label>
+          <Select name="gender" value={form.gender} onChange={handleChange}>
+            <option value="male">Homme</option>
+            <option value="female">Femme</option>
+          </Select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Département</label>
+          <Select name="departmentId" value={form.departmentId} onChange={handleChange} required>
+            <option value="">Choisir...</option>
+            {departments.map((d) => (
+              <option key={d.id} value={d.id}>{d.name}</option>
+            ))}
+          </Select>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-1">Poste</label>
+          <Select name="positionId" value={form.positionId} onChange={handleChange} required>
+            <option value="">Choisir...</option>
+            {filteredPositions.map((p) => (
+              <option key={p.id} value={p.id}>{p.name}</option>
+            ))}
+          </Select>
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-1">Rôle</label>
+        <Select name="roleId" value={form.roleId} onChange={handleChange} required>
+          <option value="">Choisir...</option>
+          {roles.map((r) => (
+            <option key={r.id} value={r.id}>{r.name}</option>
+          ))}
+        </Select>
+      </div>
+
+      <div className="flex justify-end gap-3 pt-2">
+        {onCancel && (
+          <Button type="button" variant="outline" onClick={onCancel}>
+            Annuler
+          </Button>
+        )}
+        <Button type="submit" disabled={loading}>
+          {loading && <Loader2 size={16} className="animate-spin mr-2" />}
+          Enregistrer
+        </Button>
+      </div>
     </form>
   );
 }
