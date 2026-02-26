@@ -2,16 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserFromRequest } from "@/lib/getUserFromRequest";
 
-function isUserObject(user: any): user is { id: number; role: string } {
-  return user && typeof user === "object" && "id" in user && "role" in user;
+function isUserObject(user: unknown): user is { id: number; role: string } {
+  return !!user && typeof user === "object" && "id" in user && "role" in user;
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id: paramId } = await params;
   const userPromise = getUserFromRequest();
   const user = await userPromise;
   if (!user || !isUserObject(user)) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
-  const requestId = Number(params.id);
+  const requestId = Number(paramId);
   const leaveRequest = await prisma.leaveRequest.findUnique({
     where: { id: requestId },
     include: {
@@ -32,11 +36,16 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json(leaveRequest);
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
-  const user = getUserFromRequest();
-  if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id: paramId } = await params;
+  const rawUser = await getUserFromRequest();
+  if (!rawUser || !isUserObject(rawUser)) return NextResponse.json({ error: "Non authentifi\u00e9" }, { status: 401 });
+  const user = rawUser;
 
-  const requestId = Number(params.id);
+  const requestId = Number(paramId);
   const body = await req.json();
 
   const existingRequest = await prisma.leaveRequest.findUnique({
@@ -46,7 +55,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   if (!existingRequest) return NextResponse.json({ error: "Demande non trouvée" }, { status: 404 });
 
-  const { action, comment, reason, userComment } = body;
+  const { action, reason } = body;
 
   // Approve/Reject par RH
   if (action === "approve" || action === "reject") {
@@ -58,12 +67,12 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
 
     const newStatus = action === "approve" ? "approved" : "rejected";
-    let updateData: any = {
+    const updateData: Record<string, unknown> = {
       status: newStatus,
-      approvedBy: user.id, // <-- champ de la table
+      approvedBy: user.id,
       approvedAt: new Date(),
     };
-    if (comment) updateData.adminComment = comment;
+    if (body.rejectionReason) updateData.rejectionReason = body.rejectionReason;
 
     // Si approuvé, déduire du solde
     if (action === "approve") {
@@ -108,7 +117,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
       where: { id: requestId },
       data: {
         reason: reason || existingRequest.reason,
-        adminComment: userComment || existingRequest.adminComment,
       },
       include: {
         employee: { select: { id: true, firstName: true, lastName: true, email: true } },
@@ -121,11 +129,16 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json({ error: "Action non autorisée" }, { status: 403 });
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const user = getUserFromRequest();
-  if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id: paramId } = await params;
+  const rawUserDel = await getUserFromRequest();
+  if (!rawUserDel || !isUserObject(rawUserDel)) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  const user = rawUserDel;
 
-  const requestId = Number(params.id);
+  const requestId = Number(paramId);
   const requestToDelete = await prisma.leaveRequest.findUnique({ where: { id: requestId } });
 
   if (!requestToDelete) return NextResponse.json({ error: "Demande non trouvée" }, { status: 404 });

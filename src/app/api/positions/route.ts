@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { getUserFromRequest } from "@/lib/getUserFromRequest";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
   const user = await getUserFromRequest();
   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 

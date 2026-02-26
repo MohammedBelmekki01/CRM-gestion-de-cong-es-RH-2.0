@@ -1,37 +1,52 @@
-// src/app/api/leave-types/[id]/route.ts
-"use client";
 import { NextRequest, NextResponse } from "next/server";
-import prisma  from "@/lib/prisma";
+import prisma from "@/lib/prisma";
+import { handleApiError } from "@/lib/errors";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = parseInt(params.id);
-  const leaveType = await prisma.leaveType.findUnique({ where: { id } });
-  return NextResponse.json(leaveType);
-}
-
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
-    const id = parseInt(params.id);
-    const data = await req.json();
-
-    const updated = await prisma.leaveType.update({
-      where: { id },
-      data,
+    const { id } = await params;
+    const leaveType = await prisma.leaveType.findUnique({
+      where: { id: parseInt(id) },
     });
-
-    return NextResponse.json(updated);
+    if (!leaveType) {
+      return NextResponse.json({ error: "Type de congé introuvable" }, { status: 404 });
+    }
+    return NextResponse.json(leaveType);
   } catch (error) {
-    console.error("PUT error:", error);
-    return NextResponse.json(
-      { error: "Erreur lors de la mise à jour du type de congé" },
-      { status: 500 }
-    );
+    return handleApiError(error);
   }
 }
 
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const data = await req.json();
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = parseInt(params.id);
-  await prisma.leaveType.delete({ where: { id } });
-  return NextResponse.json({ message: "Leave type deleted" });
+    const updated = await prisma.leaveType.update({
+      where: { id: parseInt(id) },
+      data,
+    });
+    return NextResponse.json(updated);
+  } catch (error) {
+    return handleApiError(error);
+  }
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    await prisma.leaveType.delete({ where: { id: parseInt(id) } });
+    return NextResponse.json({ message: "Type de congé supprimé" });
+  } catch (error) {
+    return handleApiError(error);
+  }
 }

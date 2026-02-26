@@ -1,22 +1,27 @@
-"use client";
-import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
+import { handleApiError } from "@/lib/errors";
+import { createLeaveTypeSchema } from "@/lib/validations";
 
 export async function GET() {
-  const leaveTypes = await prisma.leaveType.findMany();
-  return NextResponse.json(leaveTypes);
+  try {
+    const leaveTypes = await prisma.leaveType.findMany({
+      orderBy: { name: "asc" },
+    });
+    return NextResponse.json(leaveTypes);
+  } catch (error) {
+    return handleApiError(error);
+  }
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const newLeaveType = await prisma.leaveType.create({
-    data: {
-      name: body.name,
-      description: body.description,
-    },
-  });
+  try {
+    const body = await req.json();
+    const data = createLeaveTypeSchema.parse(body);
 
-  return NextResponse.json(newLeaveType);
+    const leaveType = await prisma.leaveType.create({ data });
+    return NextResponse.json(leaveType, { status: 201 });
+  } catch (error) {
+    return handleApiError(error);
+  }
 }

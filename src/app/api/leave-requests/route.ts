@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import { getUserFromRequest } from "@/lib/getUserFromRequest";
 
 // --- Validation métier ---
-function validateLeaveRequest(employee: any, leaveType: any, startDate: string, endDate: string) {
+function validateLeaveRequest(employee: { gender: string }, leaveType: { name: string; maxDaysPerYear: number | null }, startDate: string, endDate: string) {
   const start = new Date(startDate);
   const end = new Date(endDate);
   const daysDifference = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
@@ -34,9 +34,11 @@ function validateLeaveRequest(employee: any, leaveType: any, startDate: string, 
 }
 
 export async function GET(req: NextRequest) {
-  const userPromise = getUserFromRequest();
-  const user = await userPromise;
-  if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  const rawUser = await getUserFromRequest();
+  if (!rawUser || typeof rawUser !== "object" || !("id" in rawUser)) {
+    return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  }
+  const user = rawUser as { id: number; role: string };
 
   const { searchParams } = new URL(req.url);
   const status = searchParams.get("status");
@@ -44,7 +46,7 @@ export async function GET(req: NextRequest) {
   const startDate = searchParams.get("startDate");
   const endDate = searchParams.get("endDate");
 
-  let where: any = {};
+  const where: Record<string, unknown> = {};
   if (user.role === "EMPLOYEE") where.employeeId = user.id;
   if (status) where.status = status;
   if (employeeId && user.role === "RH") where.employeeId = Number(employeeId);
@@ -56,7 +58,7 @@ export async function GET(req: NextRequest) {
     include: {
       employee: { select: { id: true, firstName: true, lastName: true, email: true, department: { select: { name: true } } } },
       leaveType: true,
-      approvedBy: { select: { id: true, firstName: true, lastName: true } },
+      approver: { select: { id: true, firstName: true, lastName: true } },
       leaveFiles: true,
     },
     orderBy: { createdAt: "desc" },
@@ -66,11 +68,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const user = getUserFromRequest();
-  if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  const rawUser = await getUserFromRequest();
+  if (!rawUser || typeof rawUser !== "object" || !("id" in rawUser)) {
+    return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  }
+  const user = rawUser as { id: number; role: string };
 
   const data = await req.json();
-  const { leaveTypeId, startDate, endDate, reason, comment } = data;
+  const { leaveTypeId, startDate, endDate, reason } = data;
 
   if (!leaveTypeId || !startDate || !endDate || !reason) {
     return NextResponse.json({ error: "Données manquantes" }, { status: 400 });
