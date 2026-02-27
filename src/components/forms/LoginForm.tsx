@@ -204,14 +204,14 @@ export default function LoginForm() {
 
           {/* Submit */}
           <div className="pt-2">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full h-[48px] bg-[#2563eb] text-white rounded-lg text-[14px] font-semibold hover:bg-[#3b82f6] active:bg-[#1d4ed8] transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-          >
-            {isSubmitting && <Loader2 size={16} className="animate-spin" />}
-            Se connecter
-          </button>
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-[48px] bg-[#2563eb] text-white rounded-lg text-[14px] font-semibold hover:bg-[#3b82f6] active:bg-[#1d4ed8] transition-colors duration-150 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isSubmitting && <Loader2 size={16} className="animate-spin" />}
+              Se connecter
+            </button>
           </div>
         </div>
       </form>
