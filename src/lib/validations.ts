@@ -2,14 +2,18 @@ import { z } from "zod";
 
 export const loginSchema = z.object({
   email: z.string().email("Adresse e-mail invalide"),
-  password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
+  password: z
+    .string()
+    .min(6, "Le mot de passe doit contenir au moins 6 caractères"),
 });
 
 export const createEmployeeSchema = z.object({
   firstName: z.string().min(1, "Le prénom est requis"),
   lastName: z.string().min(1, "Le nom est requis"),
   email: z.string().email("Adresse e-mail invalide"),
-  password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
+  password: z
+    .string()
+    .min(6, "Le mot de passe doit contenir au moins 6 caractères"),
   phone: z.string().optional(),
   gender: z.enum(["male", "female"]),
   dateOfBirth: z.string().optional(),
@@ -24,9 +28,12 @@ export const createEmployeeSchema = z.object({
   emergencyContactPhone: z.string().optional(),
 });
 
-export const updateEmployeeSchema = createEmployeeSchema.partial().omit({ password: undefined }).extend({
-  password: z.string().min(6).optional(),
-});
+export const updateEmployeeSchema = createEmployeeSchema
+  .partial()
+  .omit({ password: undefined })
+  .extend({
+    password: z.string().min(6).optional(),
+  });
 
 export const createLeaveRequestSchema = z.object({
   leaveTypeId: z.number().int().positive("Le type de congé est requis"),

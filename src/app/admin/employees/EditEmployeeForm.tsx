@@ -6,9 +6,19 @@ import { Button } from "@/components/ui/Button";
 import { Select } from "@/components/ui/Select";
 import { Loader2 } from "lucide-react";
 
-interface Department { id: number; name: string; }
-interface Role { id: number; name: string; }
-interface Position { id: number; name: string; departmentId: number; }
+interface Department {
+  id: number;
+  name: string;
+}
+interface Role {
+  id: number;
+  name: string;
+}
+interface Position {
+  id: number;
+  name: string;
+  departmentId: number;
+}
 
 interface EditEmployeeFormProps {
   employee: Record<string, unknown>;
@@ -16,7 +26,11 @@ interface EditEmployeeFormProps {
   onCancel?: () => void;
 }
 
-export default function EditEmployeeForm({ employee, onUpdated, onCancel }: EditEmployeeFormProps) {
+export default function EditEmployeeForm({
+  employee,
+  onUpdated,
+  onCancel,
+}: EditEmployeeFormProps) {
   const [form, setForm] = useState<Record<string, string>>({
     firstName: String(employee.firstName || ""),
     lastName: String(employee.lastName || ""),
@@ -53,7 +67,9 @@ export default function EditEmployeeForm({ employee, onUpdated, onCancel }: Edit
     ? positions.filter((p) => p.departmentId === parseInt(form.departmentId))
     : positions;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     const { name, value } = e.target;
     setForm((prev) => {
       const next = { ...prev, [name]: value };
@@ -109,17 +125,50 @@ export default function EditEmployeeForm({ employee, onUpdated, onCancel }: Edit
       )}
 
       <div className="grid grid-cols-2 gap-4">
-        <Input label="Prénom" name="firstName" value={form.firstName} onChange={handleChange} required />
-        <Input label="Nom" name="lastName" value={form.lastName} onChange={handleChange} required />
+        <Input
+          label="Prénom"
+          name="firstName"
+          value={form.firstName}
+          onChange={handleChange}
+          required
+        />
+        <Input
+          label="Nom"
+          name="lastName"
+          value={form.lastName}
+          onChange={handleChange}
+          required
+        />
       </div>
 
-      <Input label="E-mail" name="email" type="email" value={form.email} onChange={handleChange} required />
-      <Input label="Nouveau mot de passe" name="password" type="password" value={form.password} onChange={handleChange} placeholder="Laisser vide pour ne pas changer" />
+      <Input
+        label="E-mail"
+        name="email"
+        type="email"
+        value={form.email}
+        onChange={handleChange}
+        required
+      />
+      <Input
+        label="Nouveau mot de passe"
+        name="password"
+        type="password"
+        value={form.password}
+        onChange={handleChange}
+        placeholder="Laisser vide pour ne pas changer"
+      />
 
       <div className="grid grid-cols-2 gap-4">
-        <Input label="Téléphone" name="phone" value={form.phone} onChange={handleChange} />
+        <Input
+          label="Téléphone"
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+        />
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Genre</label>
+          <label className="block text-sm font-medium text-foreground mb-1">
+            Genre
+          </label>
           <Select name="gender" value={form.gender} onChange={handleChange}>
             <option value="male">Homme</option>
             <option value="female">Femme</option>
@@ -129,31 +178,58 @@ export default function EditEmployeeForm({ employee, onUpdated, onCancel }: Edit
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Département</label>
-          <Select name="departmentId" value={form.departmentId} onChange={handleChange} required>
+          <label className="block text-sm font-medium text-foreground mb-1">
+            Département
+          </label>
+          <Select
+            name="departmentId"
+            value={form.departmentId}
+            onChange={handleChange}
+            required
+          >
             <option value="">Choisir...</option>
             {departments.map((d) => (
-              <option key={d.id} value={d.id}>{d.name}</option>
+              <option key={d.id} value={d.id}>
+                {d.name}
+              </option>
             ))}
           </Select>
         </div>
         <div>
-          <label className="block text-sm font-medium text-foreground mb-1">Poste</label>
-          <Select name="positionId" value={form.positionId} onChange={handleChange} required>
+          <label className="block text-sm font-medium text-foreground mb-1">
+            Poste
+          </label>
+          <Select
+            name="positionId"
+            value={form.positionId}
+            onChange={handleChange}
+            required
+          >
             <option value="">Choisir...</option>
             {filteredPositions.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
             ))}
           </Select>
         </div>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-foreground mb-1">Rôle</label>
-        <Select name="roleId" value={form.roleId} onChange={handleChange} required>
+        <label className="block text-sm font-medium text-foreground mb-1">
+          Rôle
+        </label>
+        <Select
+          name="roleId"
+          value={form.roleId}
+          onChange={handleChange}
+          required
+        >
           <option value="">Choisir...</option>
           {roles.map((r) => (
-            <option key={r.id} value={r.id}>{r.name}</option>
+            <option key={r.id} value={r.id}>
+              {r.name}
+            </option>
           ))}
         </Select>
       </div>

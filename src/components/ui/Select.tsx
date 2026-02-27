@@ -8,9 +8,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
     <select
       ref={ref}
       className={clsx(
-        "w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground",
+        "w-full h-10 px-3 border border-border rounded-[10px] bg-card text-sm text-foreground",
         "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
-        "transition-colors",
+        "transition-all duration-150",
         className,
       )}
       {...props}

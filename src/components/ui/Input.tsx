@@ -12,7 +12,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full">
         {label && (
-          <label htmlFor={inputId} className="block text-sm font-medium text-foreground mb-1">
+          <label
+            htmlFor={inputId}
+            className="block text-[13px] font-medium text-foreground mb-1.5"
+          >
             {label}
           </label>
         )}
@@ -20,18 +23,19 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           ref={ref}
           className={clsx(
-            "w-full px-3 py-2 border rounded-lg text-sm transition-colors duration-150",
-            "focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary",
+            "w-full h-10 px-3 bg-card border rounded-[10px] text-sm text-foreground placeholder:text-muted-foreground",
+            "transition-all duration-150",
+            "focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary",
             error
-              ? "border-danger text-danger focus:ring-danger/30 focus:border-danger"
-              : "border-slate-300",
-            className
+              ? "border-danger text-danger focus:ring-danger/20 focus:border-danger"
+              : "border-border",
+            className,
           )}
           {...props}
         />
-        {error && <p className="mt-1 text-sm text-danger">{error}</p>}
+        {error && <p className="mt-1.5 text-[13px] text-danger">{error}</p>}
       </div>
     );
-  }
+  },
 );
 Input.displayName = "Input";

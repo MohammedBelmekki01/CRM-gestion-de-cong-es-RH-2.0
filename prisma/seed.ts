@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Début du seeding...');
+  console.log(' Début du seeding...');
 
   // Nettoyage des données existantes
   await prisma.leaveBalance.deleteMany();
@@ -51,7 +51,7 @@ async function main() {
     })
   ]);
 
-  console.log('✅ Départements créés');
+  console.log(' Départements créés');
 
   // Création des postes
   const positions = await Promise.all([
@@ -134,7 +134,7 @@ async function main() {
     })
   ]);
 
-  console.log('✅ Postes créés');
+  console.log(' Postes créés');
 
   // Création des rôles
   const roles = await Promise.all([
@@ -251,7 +251,7 @@ async function main() {
     })
   ]);
 
-  console.log('✅ Types de congés créés');
+  console.log(' Types de congés créés');
 
   // Création des employés
   const hashedPassword = await bcrypt.hash('admin123', 10);
@@ -307,7 +307,7 @@ async function main() {
     })
   ]);
 
-  console.log('✅ Employés créés');
+  console.log('Employés créés');
 
   // Création des soldes de congés pour 2024
   const currentYear = new Date().getFullYear();
@@ -346,10 +346,10 @@ async function main() {
     }
   }
 
-  console.log('✅ Soldes de congés créés');
+  console.log(' Soldes de congés créés');
 
-  console.log('🎉 Seeding terminé avec succès !');
-  console.log('📧 Comptes de test créés :');
+  console.log('Seeding terminé avec succès !');
+  console.log('Comptes de test créés :');
   console.log('   - admin@entreprise.com (RH)');
   console.log('   - jean.dupont@entreprise.com (Employé)');
   console.log('   - marie.martin@entreprise.com (Employé)');
@@ -358,7 +358,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error('❌ Erreur lors du seeding:', e);
+    console.error('Erreur lors du seeding:', e);
     process.exit(1);
   })
   .finally(async () => {

@@ -1,18 +1,54 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-background: #F8FAFC;
-  --color-foreground: #0F172A;
-  --color-muted: #64748B;
-  --color-primary: #2563EB;
-  --color-primary-hover: #1D4ED8;
+  /* Surfaces */
+  --color-background: #f1f5f9;
+  --color-foreground: #0f172a;
+  --color-card: #ffffff;
+  --color-card-hover: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-border-light: #f1f5f9;
+  --color-input: #f8fafc;
+
+  /* Text */
+  --color-muted: #64748b;
+  --color-muted-foreground: #94a3b8;
+
+  /* Brand */
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-light: #eff6ff;
+  --color-primary-foreground: #ffffff;
+
+  /* Semantic */
   --color-success: #059669;
-  --color-warning: #D97706;
-  --color-danger: #DC2626;
-  --color-sidebar: #0F172A;
-  --color-sidebar-hover: #1E293B;
-  --color-sidebar-foreground: #CBD5E1;
-  --color-sidebar-active: #2563EB;
+  --color-success-light: #ecfdf5;
+  --color-warning: #d97706;
+  --color-warning-light: #fffbeb;
+  --color-danger: #dc2626;
+  --color-danger-light: #fef2f2;
+
+  /* Sidebar */
+  --color-sidebar: #0f172a;
+  --color-sidebar-hover: #1e293b;
+  --color-sidebar-foreground: #94a3b8;
+  --color-sidebar-active: #2563eb;
+
+  /* Shadows */
+  --shadow-card:
+    0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --shadow-card-hover:
+    0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-dropdown:
+    0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  /* Font */
   --font-sans: var(--font-inter), system-ui, -apple-system, sans-serif;
 }
 
@@ -30,23 +66,77 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 100px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted-foreground);
+}
+
+/* Focus ring utility */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--color-card),
+    0 0 0 4px var(--color-primary);
+}
+
 @keyframes fade-in {
-  from { opacity: 0; transform: translateY(4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes slide-in {
-  from { opacity: 0; transform: translateX(-8px); }
-  to { opacity: 1; transform: translateX(0); }
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 @keyframes skeleton-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 .animate-fade-in {
-  animation: fade-in 0.3s ease-out both;
+  animation: fade-in 0.35s ease-out both;
 }
 
 .animate-slide-in {
@@ -55,4 +145,8 @@ body {
 
 .animate-skeleton {
   animation: skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.2s ease-out both;
 }

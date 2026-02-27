@@ -165,8 +165,8 @@ export default function ProfilePage() {
       {/* Header card with avatar */}
       <Card>
         <CardContent className="py-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xl font-semibold">
+          <div className="flex items-center gap-5">
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-xl font-bold">
               {profile.firstName[0]}
               {profile.lastName[0]}
             </div>
@@ -338,7 +338,7 @@ export default function ProfilePage() {
                           {b.usedDays}/{b.allocatedDays}j
                         </span>
                       </div>
-                      <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                      <div className="h-2 bg-background rounded-full overflow-hidden">
                         <div
                           className="h-full rounded-full transition-all"
                           style={{

@@ -7,7 +7,7 @@ const variants: Record<BadgeVariant, string> = {
   success: "bg-success-light text-success",
   warning: "bg-warning-light text-warning",
   danger: "bg-danger-light text-danger",
-  muted: "bg-gray-100 text-muted",
+  muted: "bg-background text-muted",
 };
 
 interface BadgeProps {
@@ -24,7 +24,7 @@ export function Badge({
   return (
     <span
       className={clsx(
-        "inline-flex items-center px-2 py-0.5 text-xs font-medium rounded-full",
+        "inline-flex items-center px-2.5 py-0.5 text-[11px] font-semibold tracking-wide uppercase rounded-full",
         variants[variant],
         className,
       )}

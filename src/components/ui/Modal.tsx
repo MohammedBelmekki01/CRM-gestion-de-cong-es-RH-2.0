@@ -35,17 +35,18 @@ export function Modal({
       ref={dialogRef}
       onClose={onClose}
       className={clsx(
-        "backdrop:bg-foreground/30 rounded-lg border border-border shadow-lg",
-        "p-0 w-full max-w-lg bg-card",
-        "open:animate-fade-in",
+        "backdrop:bg-foreground/40 backdrop:backdrop-blur-[2px]",
+        "rounded-[16px] border border-border bg-card p-0 w-full max-w-lg",
+        "shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08),0_4px_6px_-4px_rgba(0,0,0,0.04)]",
+        "open:animate-scale-in",
         className,
       )}
     >
       <div className="px-6 py-4 border-b border-border flex items-center justify-between">
-        <h2 className="text-base font-semibold text-foreground">{title}</h2>
+        <h2 className="text-[15px] font-semibold text-foreground">{title}</h2>
         <button
           onClick={onClose}
-          className="text-muted hover:text-foreground transition-colors p-1"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-muted hover:text-foreground hover:bg-background transition-colors"
         >
           <svg
             className="w-4 h-4"

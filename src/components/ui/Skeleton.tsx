@@ -6,7 +6,12 @@ interface SkeletonProps {
 
 export function Skeleton({ className }: SkeletonProps) {
   return (
-    <div className={clsx("bg-border rounded animate-skeleton", className)} />
+    <div
+      className={clsx(
+        "bg-border/60 rounded-[10px] animate-skeleton",
+        className,
+      )}
+    />
   );
 }
 
@@ -37,9 +42,10 @@ export function TableSkeleton({
 
 export function CardSkeleton() {
   return (
-    <div className="bg-card border border-border rounded-lg p-6 space-y-3">
+    <div className="bg-card border border-border rounded-[14px] p-6 space-y-4">
       <Skeleton className="h-4 w-1/3" />
       <Skeleton className="h-8 w-1/2" />
+      <Skeleton className="h-4 w-2/3" />
     </div>
   );
 }

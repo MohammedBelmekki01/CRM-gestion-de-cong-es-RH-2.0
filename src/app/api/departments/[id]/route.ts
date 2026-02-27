@@ -4,7 +4,7 @@ import { handleApiError } from "@/lib/errors";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -13,7 +13,10 @@ export async function GET(
       include: { positions: true, _count: { select: { employees: true } } },
     });
     if (!department) {
-      return NextResponse.json({ error: "Département introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Département introuvable" },
+        { status: 404 },
+      );
     }
     return NextResponse.json(department);
   } catch (error) {
@@ -23,7 +26,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -41,7 +44,7 @@ export async function PUT(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;

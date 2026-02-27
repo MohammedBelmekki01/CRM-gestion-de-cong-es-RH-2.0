@@ -150,7 +150,7 @@ export default function NewRequestPage() {
                 onChange={(e) => setForm({ ...form, reason: e.target.value })}
                 rows={3}
                 required
-                className="w-full px-3 py-2 border border-border rounded-lg bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors resize-none"
+                className="w-full px-3 py-2.5 border border-border rounded-[10px] bg-card text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
                 placeholder="Motif de votre demande"
               />
             </div>

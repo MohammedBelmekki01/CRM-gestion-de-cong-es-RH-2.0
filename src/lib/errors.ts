@@ -8,7 +8,7 @@ export function handleApiError(error: unknown) {
   if (error instanceof ZodError) {
     return NextResponse.json(
       { error: "Données invalides", details: error.flatten().fieldErrors },
-      { status: 400 }
+      { status: 400 },
     );
   }
 
@@ -16,13 +16,13 @@ export function handleApiError(error: unknown) {
     if (error.code === "P2002") {
       return NextResponse.json(
         { error: "Un enregistrement avec ces données existe déjà" },
-        { status: 409 }
+        { status: 409 },
       );
     }
     if (error.code === "P2025") {
       return NextResponse.json(
         { error: "Enregistrement introuvable" },
-        { status: 404 }
+        { status: 404 },
       );
     }
   }

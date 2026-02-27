@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 
 export async function GET(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -18,7 +18,10 @@ export async function GET(
       },
     });
     if (!employee) {
-      return NextResponse.json({ error: "Employé introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Employé introuvable" },
+        { status: 404 },
+      );
     }
     return NextResponse.json(employee);
   } catch (error) {
@@ -28,7 +31,7 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -38,7 +41,10 @@ export async function PUT(
       where: { id: parseInt(id) },
     });
     if (!existing) {
-      return NextResponse.json({ error: "Employé introuvable" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Employé introuvable" },
+        { status: 404 },
+      );
     }
 
     const updateData = { ...data };
@@ -66,7 +72,7 @@ export async function PUT(
 
 export async function DELETE(
   _req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;

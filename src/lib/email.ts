@@ -7,7 +7,9 @@ function getTransporter() {
   const pass = process.env.SMTP_PASS;
 
   if (!host || !port || !user || !pass) {
-    console.warn("[Email] SMTP non configuré, les e-mails ne seront pas envoyés.");
+    console.warn(
+      "[Email] SMTP non configuré, les e-mails ne seront pas envoyés.",
+    );
     return null;
   }
 
@@ -30,7 +32,10 @@ export async function sendWelcomeEmail(email: string, name: string) {
   });
 }
 
-export async function sendPasswordResetEmail(email: string, tempPassword: string) {
+export async function sendPasswordResetEmail(
+  email: string,
+  tempPassword: string,
+) {
   const transporter = getTransporter();
   if (!transporter) return;
 

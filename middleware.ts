@@ -49,5 +49,16 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*", "/api/departments/:path*", "/api/employees/:path*", "/api/leave-requests/:path*", "/api/leave-types/:path*", "/api/positions/:path*", "/api/roles/:path*", "/api/notifications/:path*", "/api/dashboard/:path*"],
+  matcher: [
+    "/admin/:path*",
+    "/dashboard/:path*",
+    "/api/departments/:path*",
+    "/api/employees/:path*",
+    "/api/leave-requests/:path*",
+    "/api/leave-types/:path*",
+    "/api/positions/:path*",
+    "/api/roles/:path*",
+    "/api/notifications/:path*",
+    "/api/dashboard/:path*",
+  ],
 };

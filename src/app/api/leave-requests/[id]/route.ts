@@ -8,25 +8,35 @@ function isUserObject(user: unknown): user is { id: number; role: string } {
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id: paramId } = await params;
   const userPromise = getUserFromRequest();
   const user = await userPromise;
-  if (!user || !isUserObject(user)) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  if (!user || !isUserObject(user))
+    return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const requestId = Number(paramId);
   const leaveRequest = await prisma.leaveRequest.findUnique({
     where: { id: requestId },
     include: {
-      employee: { select: { id: true, firstName: true, lastName: true, email: true, department: { select: { name: true } } } },
+      employee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          department: { select: { name: true } },
+        },
+      },
       leaveType: true,
       approver: { select: { id: true, firstName: true, lastName: true } }, // <-- OK
       leaveFiles: true,
     },
   });
 
-  if (!leaveRequest) return NextResponse.json({ error: "Demande non trouvée" }, { status: 404 });
+  if (!leaveRequest)
+    return NextResponse.json({ error: "Demande non trouvée" }, { status: 404 });
 
   // Permissions
   if (user.role === "EMPLOYEE" && leaveRequest.employeeId !== user.id) {
@@ -38,11 +48,15 @@ export async function GET(
 
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id: paramId } = await params;
   const rawUser = await getUserFromRequest();
-  if (!rawUser || !isUserObject(rawUser)) return NextResponse.json({ error: "Non authentifi\u00e9" }, { status: 401 });
+  if (!rawUser || !isUserObject(rawUser))
+    return NextResponse.json(
+      { error: "Non authentifi\u00e9" },
+      { status: 401 },
+    );
   const user = rawUser;
 
   const requestId = Number(paramId);
@@ -53,17 +67,24 @@ export async function PUT(
     include: { employee: true, leaveType: true },
   });
 
-  if (!existingRequest) return NextResponse.json({ error: "Demande non trouvée" }, { status: 404 });
+  if (!existingRequest)
+    return NextResponse.json({ error: "Demande non trouvée" }, { status: 404 });
 
   const { action, reason } = body;
 
   // Approve/Reject par RH
   if (action === "approve" || action === "reject") {
     if (user.role !== "RH") {
-      return NextResponse.json({ error: "Seul le RH peut approuver/rejeter" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Seul le RH peut approuver/rejeter" },
+        { status: 403 },
+      );
     }
     if (existingRequest.status !== "pending") {
-      return NextResponse.json({ error: "Cette demande a déjà été traitée" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Cette demande a déjà été traitée" },
+        { status: 400 },
+      );
     }
 
     const newStatus = action === "approve" ? "approved" : "rejected";
@@ -87,7 +108,8 @@ export async function PUT(
         await prisma.leaveBalance.update({
           where: { id: leaveBalance.id },
           data: {
-            remainingDays: leaveBalance.remainingDays - existingRequest.daysRequested,
+            remainingDays:
+              leaveBalance.remainingDays - existingRequest.daysRequested,
           },
         });
       }
@@ -97,7 +119,9 @@ export async function PUT(
       where: { id: requestId },
       data: updateData,
       include: {
-        employee: { select: { id: true, firstName: true, lastName: true, email: true } },
+        employee: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
         leaveType: true,
         approver: { select: { id: true, firstName: true, lastName: true } }, // <-- OK
       },
@@ -111,7 +135,10 @@ export async function PUT(
   // Modification par l'employé (avant traitement)
   if (user.role === "EMPLOYEE" && existingRequest.employeeId === user.id) {
     if (existingRequest.status !== "pending") {
-      return NextResponse.json({ error: "Impossible de modifier une demande déjà traitée" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Impossible de modifier une demande déjà traitée" },
+        { status: 400 },
+      );
     }
     const updatedRequest = await prisma.leaveRequest.update({
       where: { id: requestId },
@@ -119,7 +146,9 @@ export async function PUT(
         reason: reason || existingRequest.reason,
       },
       include: {
-        employee: { select: { id: true, firstName: true, lastName: true, email: true } },
+        employee: {
+          select: { id: true, firstName: true, lastName: true, email: true },
+        },
         leaveType: true,
       },
     });
@@ -131,25 +160,35 @@ export async function PUT(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id: paramId } = await params;
   const rawUserDel = await getUserFromRequest();
-  if (!rawUserDel || !isUserObject(rawUserDel)) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  if (!rawUserDel || !isUserObject(rawUserDel))
+    return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
   const user = rawUserDel;
 
   const requestId = Number(paramId);
-  const requestToDelete = await prisma.leaveRequest.findUnique({ where: { id: requestId } });
+  const requestToDelete = await prisma.leaveRequest.findUnique({
+    where: { id: requestId },
+  });
 
-  if (!requestToDelete) return NextResponse.json({ error: "Demande non trouvée" }, { status: 404 });
+  if (!requestToDelete)
+    return NextResponse.json({ error: "Demande non trouvée" }, { status: 404 });
 
   // Seul l'employé peut supprimer sa demande (si en attente) ou le RH
   if (user.role === "EMPLOYEE") {
     if (requestToDelete.employeeId !== user.id) {
-      return NextResponse.json({ error: "Accès non autorisé" }, { status: 403 });
+      return NextResponse.json(
+        { error: "Accès non autorisé" },
+        { status: 403 },
+      );
     }
     if (requestToDelete.status !== "pending") {
-      return NextResponse.json({ error: "Impossible de supprimer une demande déjà traitée" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Impossible de supprimer une demande déjà traitée" },
+        { status: 400 },
+      );
     }
   }
 

@@ -3,10 +3,16 @@ import prisma from "@/lib/prisma";
 import { getUserFromRequest } from "@/lib/getUserFromRequest";
 
 // --- Validation métier ---
-function validateLeaveRequest(employee: { gender: string }, leaveType: { name: string; maxDaysPerYear: number | null }, startDate: string, endDate: string) {
+function validateLeaveRequest(
+  employee: { gender: string },
+  leaveType: { name: string; maxDaysPerYear: number | null },
+  startDate: string,
+  endDate: string,
+) {
   const start = new Date(startDate);
   const end = new Date(endDate);
-  const daysDifference = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  const daysDifference =
+    Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
   if (end <= start) return "La date de fin doit être après la date de début";
 
@@ -21,9 +27,15 @@ function validateLeaveRequest(employee: { gender: string }, leaveType: { name: s
   if (leaveType.maxDaysPerYear && daysDifference > leaveType.maxDaysPerYear) {
     return `Le nombre de jours demandés (${daysDifference}) dépasse la limite autorisée (${leaveType.maxDaysPerYear})`;
   }
-  if (leaveTypeName.includes("récupération") || leaveTypeName.includes("recuperation")) {
+  if (
+    leaveTypeName.includes("récupération") ||
+    leaveTypeName.includes("recuperation")
+  ) {
     const now = new Date();
-    if (start.getMonth() !== now.getMonth() || start.getFullYear() !== now.getFullYear()) {
+    if (
+      start.getMonth() !== now.getMonth() ||
+      start.getFullYear() !== now.getFullYear()
+    ) {
       return "Les congés de récupération ne peuvent être pris que dans le mois en cours";
     }
     if (daysDifference > 2) {
@@ -56,7 +68,15 @@ export async function GET(req: NextRequest) {
   const leaves = await prisma.leaveRequest.findMany({
     where,
     include: {
-      employee: { select: { id: true, firstName: true, lastName: true, email: true, department: { select: { name: true } } } },
+      employee: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          email: true,
+          department: { select: { name: true } },
+        },
+      },
       leaveType: true,
       approver: { select: { id: true, firstName: true, lastName: true } },
       leaveFiles: true,
@@ -83,20 +103,34 @@ export async function POST(req: NextRequest) {
 
   // Vérifier que l'employé existe
   const employee = await prisma.employee.findUnique({ where: { id: user.id } });
-  if (!employee) return NextResponse.json({ error: "Employé non trouvé" }, { status: 404 });
+  if (!employee)
+    return NextResponse.json({ error: "Employé non trouvé" }, { status: 404 });
 
   // Vérifier que le type de congé existe
-  const leaveType = await prisma.leaveType.findUnique({ where: { id: Number(leaveTypeId) } });
-  if (!leaveType) return NextResponse.json({ error: "Type de congé non trouvé" }, { status: 404 });
+  const leaveType = await prisma.leaveType.findUnique({
+    where: { id: Number(leaveTypeId) },
+  });
+  if (!leaveType)
+    return NextResponse.json(
+      { error: "Type de congé non trouvé" },
+      { status: 404 },
+    );
 
   // Règles métier
-  const validationError = validateLeaveRequest(employee, leaveType, startDate, endDate);
-  if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
+  const validationError = validateLeaveRequest(
+    employee,
+    leaveType,
+    startDate,
+    endDate,
+  );
+  if (validationError)
+    return NextResponse.json({ error: validationError }, { status: 400 });
 
   // Calcul du nombre de jours
   const start = new Date(startDate);
   const end = new Date(endDate);
-  const daysDifference = Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+  const daysDifference =
+    Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 
   // Vérifier le solde
   const leaveBalance = await prisma.leaveBalance.findFirst({
@@ -107,9 +141,12 @@ export async function POST(req: NextRequest) {
     },
   });
   if (leaveBalance && leaveBalance.remainingDays < daysDifference) {
-    return NextResponse.json({
-      error: `Solde insuffisant. Vous avez ${leaveBalance.remainingDays} jours disponibles.`,
-    }, { status: 400 });
+    return NextResponse.json(
+      {
+        error: `Solde insuffisant. Vous avez ${leaveBalance.remainingDays} jours disponibles.`,
+      },
+      { status: 400 },
+    );
   }
 
   // Créer la demande
@@ -125,7 +162,9 @@ export async function POST(req: NextRequest) {
       // Ajoute d'autres champs si besoin
     },
     include: {
-      employee: { select: { id: true, firstName: true, lastName: true, email: true } },
+      employee: {
+        select: { id: true, firstName: true, lastName: true, email: true },
+      },
       leaveType: { select: { id: true, name: true } },
     },
   });

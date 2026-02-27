@@ -152,7 +152,9 @@ export default function ExportPage() {
         x = 14;
         keys.forEach((key, i) => {
           doc.text(
-            String((row as Record<string, unknown>)[key as string] ?? "").substring(0, Math.floor(colWidths[i] / 1.8)),
+            String(
+              (row as Record<string, unknown>)[key as string] ?? "",
+            ).substring(0, Math.floor(colWidths[i] / 1.8)),
             x + 1,
             y,
           );
@@ -209,7 +211,7 @@ export default function ExportPage() {
                 type="date"
                 value={from}
                 onChange={(e) => setFrom(e.target.value)}
-                className="block w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
+                className="block w-full h-10 rounded-[10px] border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
             <div>
@@ -220,7 +222,7 @@ export default function ExportPage() {
                 type="date"
                 value={to}
                 onChange={(e) => setTo(e.target.value)}
-                className="block w-full rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground"
+                className="block w-full h-10 rounded-[10px] border border-border bg-card px-3 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               />
             </div>
           </div>

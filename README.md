@@ -95,8 +95,6 @@ npm run db:seed
 npm run dev
 ```
 
-L'application est accessible sur http://localhost:3000
-
 ## Comptes de test
 
 | Email | Mot de passe | Role |

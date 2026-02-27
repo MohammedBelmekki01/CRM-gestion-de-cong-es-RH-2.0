@@ -3,8 +3,21 @@
 import { useEffect, useState, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import clsx from "clsx";
+import {
+  LayoutDashboard,
+  FileDown,
+  Users,
+  Building2,
+  Briefcase,
+  CalendarDays,
+  PlusCircle,
+  User,
+  LogOut,
+  Bell,
+  Menu,
+} from "lucide-react";
 
-interface User {
+interface UserData {
   id: number;
   firstName: string;
   lastName: string;
@@ -16,6 +29,7 @@ interface User {
 interface NavItem {
   label: string;
   href: string;
+  icon: React.ElementType;
 }
 
 interface Notification {
@@ -28,22 +42,30 @@ interface Notification {
 }
 
 const hrNav: NavItem[] = [
-  { label: "Tableau de bord", href: "/dashboard/hr" },
-  { label: "Export rapports", href: "/dashboard/hr/export" },
-  { label: "Employes", href: "/admin/employees" },
-  { label: "Departements", href: "/admin/departments" },
-  { label: "Postes", href: "/admin/positions" },
-  { label: "Types de conges", href: "/admin/leave-types" },
+  { label: "Tableau de bord", href: "/dashboard/hr", icon: LayoutDashboard },
+  { label: "Export rapports", href: "/dashboard/hr/export", icon: FileDown },
+  { label: "Employes", href: "/admin/employees", icon: Users },
+  { label: "Departements", href: "/admin/departments", icon: Building2 },
+  { label: "Postes", href: "/admin/positions", icon: Briefcase },
+  { label: "Types de conges", href: "/admin/leave-types", icon: CalendarDays },
 ];
 
 const employeeNav: NavItem[] = [
-  { label: "Tableau de bord", href: "/dashboard/employee" },
-  { label: "Nouvelle demande", href: "/dashboard/employee/new-request" },
-  { label: "Mon profil", href: "/dashboard/employee/profile" },
+  {
+    label: "Tableau de bord",
+    href: "/dashboard/employee",
+    icon: LayoutDashboard,
+  },
+  {
+    label: "Nouvelle demande",
+    href: "/dashboard/employee/new-request",
+    icon: PlusCircle,
+  },
+  { label: "Mon profil", href: "/dashboard/employee/profile", icon: User },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserData | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -60,7 +82,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       });
   }, []);
 
-  // Fetch notifications
   useEffect(() => {
     const fetchNotifs = () => {
       fetch("/api/notifications")
@@ -73,11 +94,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         .catch(() => {});
     };
     fetchNotifs();
-    const interval = setInterval(fetchNotifs, 30000); // poll every 30s
+    const interval = setInterval(fetchNotifs, 30000);
     return () => clearInterval(interval);
   }, []);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
@@ -107,119 +127,128 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const nav = isHR ? hrNav : employeeNav;
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-background">
+      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-foreground/20 z-20 lg:hidden"
+          className="fixed inset-0 bg-foreground/25 backdrop-blur-[2px] z-20 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
+      {/* Sidebar */}
       <aside
         className={clsx(
-          "fixed lg:static inset-y-0 left-0 z-30 w-60 bg-sidebar flex flex-col transition-transform duration-200",
+          "fixed lg:static inset-y-0 left-0 z-30 w-[260px] bg-sidebar flex flex-col transition-transform duration-200",
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0",
         )}
       >
-        <div className="px-5 py-5 border-b border-white/10">
-          <h1 className="text-base font-semibold text-white tracking-tight">
-            GestionRH
-          </h1>
-          {user && (
-            <p className="text-xs text-sidebar-foreground mt-1 truncate">
-              {user.firstName} {user.lastName}
-            </p>
-          )}
+        {/* Sidebar brand */}
+        <div className="px-6 h-16 flex items-center border-b border-white/[0.06]">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <span className="text-xs font-bold text-white">RH</span>
+            </div>
+            <div>
+              <h1 className="text-[15px] font-semibold text-white tracking-tight leading-tight">
+                GestionRH
+              </h1>
+            </div>
+          </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
+        {/* User info */}
+        {user && (
+          <div className="px-5 py-4 border-b border-white/[0.06]">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-white/10 text-white/80 flex items-center justify-center text-[13px] font-medium">
+                {user.firstName[0]}
+                {user.lastName[0]}
+              </div>
+              <div className="min-w-0">
+                <p className="text-[13px] font-medium text-white truncate">
+                  {user.firstName} {user.lastName}
+                </p>
+                <p className="text-[11px] text-sidebar-foreground truncate">
+                  {user.role?.name}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Navigation */}
+        <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
           {nav.map((item) => {
             const active = pathname === item.href;
+            const Icon = item.icon;
             return (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={clsx(
-                  "flex items-center px-3 py-2 rounded-md text-sm transition-colors",
+                  "flex items-center gap-3 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition-all duration-150",
                   active
-                    ? "bg-sidebar-active text-white"
-                    : "text-sidebar-foreground hover:bg-sidebar-hover hover:text-white",
+                    ? "bg-white/[0.12] text-white"
+                    : "text-sidebar-foreground hover:bg-white/[0.06] hover:text-white",
                 )}
               >
+                <Icon size={18} strokeWidth={active ? 2 : 1.5} />
                 {item.label}
               </a>
             );
           })}
         </nav>
 
-        <div className="px-3 py-4 border-t border-white/10">
+        {/* Logout */}
+        <div className="px-3 py-4 border-t border-white/[0.06]">
           <button
             onClick={handleLogout}
-            className="flex items-center w-full px-3 py-2 rounded-md text-sm text-sidebar-foreground hover:bg-sidebar-hover hover:text-white transition-colors"
+            className="flex items-center gap-3 w-full px-3 py-2.5 rounded-[10px] text-[13px] font-medium text-sidebar-foreground hover:bg-white/[0.06] hover:text-white transition-all duration-150"
           >
+            <LogOut size={18} strokeWidth={1.5} />
             Deconnexion
           </button>
         </div>
       </aside>
 
+      {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 border-b border-border bg-card flex items-center px-4 lg:px-6 shrink-0">
+        {/* Header */}
+        <header className="h-16 border-b border-border bg-card flex items-center px-4 lg:px-6 shrink-0 shadow-[0_1px_2px_0_rgba(0,0,0,0.03)]">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="lg:hidden p-1.5 -ml-1.5 rounded-md text-muted hover:text-foreground hover:bg-border/50 transition-colors"
+            className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:text-foreground hover:bg-background transition-colors -ml-1"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
+            <Menu size={20} />
           </button>
-          <div className="ml-auto flex items-center gap-3">
+
+          <div className="ml-auto flex items-center gap-2">
             {/* Notification bell */}
             <div className="relative" ref={notifRef}>
               <button
                 onClick={() => setNotifOpen(!notifOpen)}
-                className="relative p-1.5 rounded-md text-muted hover:text-foreground hover:bg-border/50 transition-colors"
+                className="relative w-9 h-9 flex items-center justify-center rounded-lg text-muted hover:text-foreground hover:bg-background transition-colors"
               >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
-                  />
-                </svg>
+                <Bell size={19} />
                 {unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-danger rounded-full">
+                  <span className="absolute top-1 right-1 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-danger rounded-full">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
               </button>
 
               {notifOpen && (
-                <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-xl shadow-lg z-50 overflow-hidden">
-                  <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-                    <h3 className="text-sm font-semibold text-foreground">
+                <div className="absolute right-0 mt-2 w-80 bg-card border border-border rounded-[14px] shadow-[0_10px_15px_-3px_rgba(0,0,0,0.08),0_4px_6px_-4px_rgba(0,0,0,0.04)] z-50 overflow-hidden animate-scale-in">
+                  <div className="flex items-center justify-between px-4 py-3.5 border-b border-border">
+                    <h3 className="text-[13px] font-semibold text-foreground">
                       Notifications
                     </h3>
                     {unreadCount > 0 && (
                       <button
                         onClick={handleMarkAllRead}
-                        className="text-xs text-primary hover:underline"
+                        className="text-[12px] text-primary font-medium hover:underline"
                       >
                         Tout marquer lu
                       </button>
@@ -227,7 +256,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                   </div>
                   <div className="max-h-72 overflow-y-auto">
                     {notifications.length === 0 ? (
-                      <div className="py-8 text-center text-sm text-muted">
+                      <div className="py-10 text-center text-[13px] text-muted">
                         Aucune notification
                       </div>
                     ) : (
@@ -236,21 +265,21 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
                           key={n.id}
                           className={clsx(
                             "px-4 py-3 border-b border-border last:border-0 transition-colors",
-                            !n.isRead && "bg-primary/5",
+                            !n.isRead && "bg-primary/[0.04]",
                           )}
                         >
-                          <div className="flex items-start gap-2">
+                          <div className="flex items-start gap-2.5">
                             {!n.isRead && (
                               <span className="mt-1.5 w-2 h-2 rounded-full bg-primary shrink-0" />
                             )}
                             <div className="min-w-0">
-                              <p className="text-sm font-medium text-foreground">
+                              <p className="text-[13px] font-medium text-foreground leading-snug">
                                 {n.title}
                               </p>
-                              <p className="text-xs text-muted mt-0.5 line-clamp-2">
+                              <p className="text-[12px] text-muted mt-0.5 line-clamp-2">
                                 {n.message}
                               </p>
-                              <p className="text-[10px] text-muted mt-1">
+                              <p className="text-[11px] text-muted-foreground mt-1">
                                 {new Date(n.createdAt).toLocaleDateString(
                                   "fr-FR",
                                   {
@@ -271,21 +300,29 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               )}
             </div>
 
+            {/* Separator */}
+            <div className="hidden sm:block w-px h-6 bg-border mx-1" />
+
+            {/* User avatar + name */}
             {user && (
-              <div className="text-right hidden sm:block">
-                <p className="text-sm font-medium text-foreground">
-                  {user.firstName} {user.lastName}
-                </p>
-                <p className="text-xs text-muted">{user.role?.name}</p>
+              <div className="flex items-center gap-3">
+                <div className="text-right hidden sm:block">
+                  <p className="text-[13px] font-medium text-foreground leading-tight">
+                    {user.firstName} {user.lastName}
+                  </p>
+                  <p className="text-[11px] text-muted">{user.role?.name}</p>
+                </div>
+                <div className="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-[13px] font-semibold">
+                  {user.firstName[0]}
+                  {user.lastName[0]}
+                </div>
               </div>
             )}
-            <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-medium">
-              {user ? `${user.firstName[0]}${user.lastName[0]}` : ".."}
-            </div>
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">{children}</main>
+        {/* Page content */}
+        <main className="flex-1 overflow-y-auto p-5 lg:p-8">{children}</main>
       </div>
     </div>
   );

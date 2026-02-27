@@ -86,9 +86,15 @@ export default function LeaveTypesPage() {
     const payload = {
       name: form.name,
       description: form.description || null,
-      maxDaysPerYear: form.maxDaysPerYear ? parseInt(form.maxDaysPerYear) : null,
-      maxDaysPerMonth: form.maxDaysPerMonth ? parseInt(form.maxDaysPerMonth) : null,
-      maxTimesPerMonth: form.maxTimesPerMonth ? parseInt(form.maxTimesPerMonth) : null,
+      maxDaysPerYear: form.maxDaysPerYear
+        ? parseInt(form.maxDaysPerYear)
+        : null,
+      maxDaysPerMonth: form.maxDaysPerMonth
+        ? parseInt(form.maxDaysPerMonth)
+        : null,
+      maxTimesPerMonth: form.maxTimesPerMonth
+        ? parseInt(form.maxTimesPerMonth)
+        : null,
       genderRestriction: form.genderRestriction,
       requiresMedicalCertificate: form.requiresMedicalCertificate,
       color: form.color,
@@ -138,8 +144,12 @@ export default function LeaveTypesPage() {
     <div className="space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Types de congés</h1>
-          <p className="text-sm text-muted mt-1">{leaveTypes.length} type(s) configuré(s)</p>
+          <h1 className="text-2xl font-bold text-foreground">
+            Types de congés
+          </h1>
+          <p className="text-sm text-muted mt-1">
+            {leaveTypes.length} type(s) configuré(s)
+          </p>
         </div>
         <Button onClick={openCreate}>
           <Plus size={16} className="mr-2" />
@@ -151,7 +161,11 @@ export default function LeaveTypesPage() {
         <EmptyState
           title="Aucun type de congé"
           description="Créez votre premier type de congé pour commencer."
-          action={<Button onClick={openCreate}><Plus size={16} className="mr-2" /> Ajouter</Button>}
+          action={
+            <Button onClick={openCreate}>
+              <Plus size={16} className="mr-2" /> Ajouter
+            </Button>
+          }
         />
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -159,7 +173,10 @@ export default function LeaveTypesPage() {
             <Card key={lt.id} className="relative">
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: lt.color }} />
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: lt.color }}
+                  />
                   <h3 className="font-semibold text-foreground">{lt.name}</h3>
                 </div>
                 <Badge variant={lt.isActive ? "success" : "default"}>
@@ -173,18 +190,28 @@ export default function LeaveTypesPage() {
 
               <div className="space-y-1 text-sm text-muted">
                 {lt.maxDaysPerYear && <p>Max/an : {lt.maxDaysPerYear} jours</p>}
-                {lt.maxDaysPerMonth && <p>Max/mois : {lt.maxDaysPerMonth} jours</p>}
+                {lt.maxDaysPerMonth && (
+                  <p>Max/mois : {lt.maxDaysPerMonth} jours</p>
+                )}
                 <p>Genre : {genderLabel(lt.genderRestriction)}</p>
                 {lt.requiresMedicalCertificate && (
                   <p className="text-warning">Certificat médical requis</p>
                 )}
               </div>
 
-              <div className="flex gap-2 mt-4 pt-3 border-t border-slate-100">
-                <Button size="sm" variant="outline" onClick={() => openEdit(lt)}>
+              <div className="flex gap-2 mt-4 pt-3 border-t border-border">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => openEdit(lt)}
+                >
                   <Pencil size={14} className="mr-1" /> Modifier
                 </Button>
-                <Button size="sm" variant="danger" onClick={() => handleDelete(lt.id)}>
+                <Button
+                  size="sm"
+                  variant="danger"
+                  onClick={() => handleDelete(lt.id)}
+                >
                   <Trash2 size={14} className="mr-1" /> Supprimer
                 </Button>
               </div>
@@ -193,7 +220,11 @@ export default function LeaveTypesPage() {
         </div>
       )}
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? "Modifier le type" : "Nouveau type de congé"}>
+      <Modal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        title={editing ? "Modifier le type" : "Nouveau type de congé"}
+      >
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
             label="Nom"
@@ -211,22 +242,30 @@ export default function LeaveTypesPage() {
               label="Max jours/an"
               type="number"
               value={form.maxDaysPerYear}
-              onChange={(e) => setForm({ ...form, maxDaysPerYear: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, maxDaysPerYear: e.target.value })
+              }
             />
             <Input
               label="Max jours/mois"
               type="number"
               value={form.maxDaysPerMonth}
-              onChange={(e) => setForm({ ...form, maxDaysPerMonth: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, maxDaysPerMonth: e.target.value })
+              }
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Genre</label>
+              <label className="block text-sm font-medium text-foreground mb-1">
+                Genre
+              </label>
               <select
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm"
+                className="w-full h-10 px-3 border border-border rounded-[10px] bg-card text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                 value={form.genderRestriction}
-                onChange={(e) => setForm({ ...form, genderRestriction: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, genderRestriction: e.target.value })
+                }
               >
                 <option value="all">Tous</option>
                 <option value="male">Hommes</option>
@@ -234,7 +273,9 @@ export default function LeaveTypesPage() {
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-foreground mb-1">Couleur</label>
+              <label className="block text-sm font-medium text-foreground mb-1">
+                Couleur
+              </label>
               <input
                 type="color"
                 className="w-full h-10 rounded-lg cursor-pointer"
@@ -247,13 +288,24 @@ export default function LeaveTypesPage() {
             <input
               type="checkbox"
               checked={form.requiresMedicalCertificate}
-              onChange={(e) => setForm({ ...form, requiresMedicalCertificate: e.target.checked })}
-              className="w-4 h-4 rounded border-slate-300"
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  requiresMedicalCertificate: e.target.checked,
+                })
+              }
+              className="w-4 h-4 rounded border-border accent-primary"
             />
             <span className="text-sm">Certificat médical requis</span>
           </label>
           <div className="flex justify-end gap-3 pt-2">
-            <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Annuler</Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setModalOpen(false)}
+            >
+              Annuler
+            </Button>
             <Button type="submit" disabled={saving}>
               {editing ? "Enregistrer" : "Créer"}
             </Button>

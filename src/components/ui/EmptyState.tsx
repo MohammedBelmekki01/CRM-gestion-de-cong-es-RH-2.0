@@ -6,10 +6,10 @@ interface EmptyStateProps {
 
 export function EmptyState({ title, description, action }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center py-12 px-4">
-      <div className="w-12 h-12 rounded-full bg-border flex items-center justify-center mb-4">
+    <div className="flex flex-col items-center justify-center py-14 px-4">
+      <div className="w-14 h-14 rounded-2xl bg-background flex items-center justify-center mb-5">
         <svg
-          className="w-6 h-6 text-muted"
+          className="w-6 h-6 text-muted-foreground"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -22,9 +22,13 @@ export function EmptyState({ title, description, action }: EmptyStateProps) {
           />
         </svg>
       </div>
-      <p className="text-sm font-medium text-foreground">{title}</p>
-      {description && <p className="text-sm text-muted mt-1">{description}</p>}
-      {action && <div className="mt-4">{action}</div>}
+      <p className="text-sm font-semibold text-foreground">{title}</p>
+      {description && (
+        <p className="text-[13px] text-muted mt-1.5 text-center max-w-xs">
+          {description}
+        </p>
+      )}
+      {action && <div className="mt-5">{action}</div>}
     </div>
   );
 }
