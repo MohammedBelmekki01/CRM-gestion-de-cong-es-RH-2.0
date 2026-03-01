@@ -129,3 +129,12 @@ src/
 | `npm run start` | Lancer le serveur de production |
 | `npm run lint` | Verifier le code avec ESLint |
 | `npm run db:seed` | Remplir la base de donnees avec les donnees de test |
+
+
+
+demonstration video : 
+
+https://github.com/user-attachments/assets/0638f8d8-c28d-4ad6-9f57-89ff0df29d6d
+
+
+
